@@ -1,92 +1,110 @@
-# AI-Augmented PM Workflow — Showcase
+# PM Chief of Staff — AI Workflow Showcase
 
-> **What this is:** A live, working system where Claude (AI) acts as an intelligent co-pilot across my entire product management workflow — connected to real tools, running on a schedule, and maintaining persistent memory across days and weeks.
+> **What this is:** A live, working system where AI acts as a Chief of Staff across my entire product management workflow — connected to real tools, governed by an Operating Contract, running on a schedule, and maintaining persistent memory across days and weeks.
 >
-> **What this is not:** A demo or prototype. Every component in this folder reflects how I actually work today.
+> **What this is not:** A demo or prototype. Every component reflects how I actually work today.
 
 ---
 
 ## The Core Idea
 
-Most PMs use AI like a search engine — ask a question, get an answer, move on. I built something different: **a persistent, connected operating system** where AI is woven into the daily rhythm of PM work.
+Most PMs use AI like a search engine — ask a question, get an answer, move on. I built something different: **a governed, persistent operating system** where AI is woven into the daily rhythm of PM work.
 
-It does three things that most AI setups don't:
+It does four things that most AI setups don't:
 
-1. **Remembers across time** — decisions, risks, open commitments, and customer signals are stored in structured memory files that every daily run reads from and writes back to.
-2. **Connects to real tools** — Claude reads and writes across Slack, Jira, Notion, Fireflies, and Google Calendar, not just chat windows.
-3. **Runs on a schedule** — morning briefs, evening debriefs, competitive intel harvests, and weekly syntheses fire automatically. I don't prompt them.
+1. **Remembers across time** — decisions, risks, commitments, and customer signals are stored in structured memory files with stable cross-referenced IDs that every scheduled run reads and writes back to.
+2. **Connects to real tools** — reads and writes across Slack, Jira, Notion, Fireflies, Granola, Gmail, and Google Calendar — not just chat windows.
+3. **Runs on a schedule** — morning briefs, evening debriefs, competitive intel harvests, and weekly syntheses fire automatically without any prompting.
+4. **Enforces rules** — an Operating Contract defines write ownership, required output sections, and memory schemas. A Python validator enforces it after every run.
 
 ---
 
 ## System Map
 
 ```
-┌─────────────────────────────────────────────────────────────────┐
-│                        CONNECTED TOOLS                          │
-│  Fireflies (meetings) │ Slack │ Jira │ Notion │ Google Calendar │
-└────────────────────────────────┬────────────────────────────────┘
-                                 │ reads / writes
-                                 ▼
-┌─────────────────────────────────────────────────────────────────┐
-│                         CLAUDE (AI Layer)                       │
-│                                                                 │
-│  Scheduled Runs:          On-Demand Skills:                     │
-│  • Morning Brief (6AM)    • Write spec / PRD                    │
-│  • Evening Debrief (6PM)  • Competitive deep dive               │
-│  • Competitive Harvest    • Sprint planning                     │
-│  • Weekly Synthesis       • Stakeholder update                  │
-└────────────────────────────────┬────────────────────────────────┘
-                                 │ reads / writes
-                                 ▼
-┌─────────────────────────────────────────────────────────────────┐
-│                          PM OS MEMORY                           │
-│                                                                 │
-│  Open Loops      Decision Ledger    Risk Register               │
-│  Stakeholder     Customer Themes    Customer Insights           │
-│  Heatmap         (weekly rollups)   (nightly harvest)           │
-└─────────────────────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────────────────────────┐
+│                          CONNECTED TOOLS                             │
+│  Fireflies · Granola · Slack · Jira · Notion · Gmail · Calendar      │
+└─────────────────────────────────┬────────────────────────────────────┘
+                                  │ reads / writes via MCP
+                                  ▼
+┌──────────────────────────────────────────────────────────────────────┐
+│                       SCHEDULED RUNS (AI Layer)                      │
+│                                                                      │
+│  Fireflies Harvest (1AM)     Morning Brief (6AM) — read-only         │
+│  Evening Debrief (6PM)       Weekly Radar (Sat) — subagent pair      │
+│                                                                      │
+│  On-Demand: spec writing · sprint planning · stakeholder updates     │
+└─────────────────────────────────┬────────────────────────────────────┘
+                                  │ governed by Operating Contract
+                                  ▼
+┌──────────────────────────────────────────────────────────────────────┐
+│                          PM OS MEMORY                                │
+│                                                                      │
+│  Open Loops (L-###)      Decision Ledger (D-###)                     │
+│  Risk Register (R-###)   Stakeholder Heatmap (S-###)                 │
+│  Customer Themes (T-###) Customer Insights — Latest (rolling 7-day)  │
+└──────────────────────────────────────────────────────────────────────┘
+                                  │
+                                  ▼
+                     Python schema validator
+              (enforces Operating Contract after every write)
 ```
 
 ---
 
-## What's in This Folder
+## What Makes This Different
+
+### Operating Contract
+A single authority document governs the entire system — canonical artifact paths, required output sections, memory entry schemas, and write ownership. If any run or file disagrees with the Contract, the Contract wins.
+
+### Write Ownership Is Enforced
+Morning Brief is strictly read-only. It reads all six memory files but cannot mutate any of them. Only Evening Debrief and Weekly Radar can write. This prevents corrupted state from a run that fired with incomplete context.
+
+### Detection Rules
+Four automatic checks run in every Evening Debrief and Weekly Radar:
+- 🔴 **SYSTEMIC** — same issue in 2+ distinct sources within 7 days → escalate, find root cause
+- 🟠 **COMMITMENT DRIFT** — verbal commitment not in any tracked system within 24h → surface with source and age
+- 🟠 **DECISION DRIFT** — significant decision not documented within 48h → propose write-back
+- 🔴 **TRUST RISK** — stakeholder waiting 72h+ → flag, draft suggested reply
+
+### Open Loops Reconfirmation
+Every full Evening Debrief actively checks each open loop against a live source (Slack, Jira, Calendar). Confirmed-done loops are closed with a resolution note. Loops older than 14 days with no signal are flagged as stale. This prevents phantom open items from accumulating and creating false anxiety each morning.
+
+### Subagent Orchestration
+The Weekly Radar fires two subagents simultaneously — one reads all memory files in parallel, one fetches all week-scoped live data (Gmail, Slack, Jira via 4 parallel JQL queries, Fireflies, Granola, and the week's Evening Debriefs). The orchestrator synthesizes across both digests to surface patterns neither source reveals alone.
+
+### Schema Validation
+A Python validator runs after every write. It fails on missing required sections, duplicate IDs, unresolvable cross-references, artifacts in non-canonical paths, and output that violates the Operating Contract.
+
+---
+
+## What's in This Repo
 
 | Section | What it shows |
 |---------|--------------|
-| [`01-PM-OS/`](./01-PM-OS/overview.md) | The persistent memory system: daily briefs, open loops, decisions, risks |
-| [`02-Connected-Tools/`](./02-Connected-Tools/connected-tools.md) | How Claude reads/writes across Slack, Jira, Notion, Fireflies, Calendar |
-| [`03-Competitive-Intel/`](./03-Competitive-Intel/overview.md) | Automated daily competitor signal harvesting + weekly synthesis |
-| [`SHOWCASE.md`](./SHOWCASE.md) | Single-page narrative document — start here for the full story |
+| [`01-PM-OS/`](./01-PM-OS/overview.md) | Full PM OS overview — memory layer, detection rules, write ownership, validation |
+| [`01-PM-OS/sample-morning-brief.md`](./01-PM-OS/sample-morning-brief.md) | Sample brief with system alerts, suggested replies, ⚡ leverage priority |
+| [`01-PM-OS/sample-evening-debrief.md`](./01-PM-OS/sample-evening-debrief.md) | Sample debrief with reconfirmation pass, detection checks, memory write-back |
+| [`01-PM-OS/sample-memory-files/`](./01-PM-OS/sample-memory-files/) | Open Loops, Decision Ledger, Risk Register with cross-referenced IDs |
+| [`02-Connected-Tools/`](./02-Connected-Tools/connected-tools.md) | How the AI reads/writes across each connected tool |
+| [`03-Competitive-Intel/`](./03-Competitive-Intel/overview.md) | Automated daily competitor signal harvesting + weekly synthesis pipeline |
+| [`SHOWCASE.md`](./SHOWCASE.md) | Full narrative — start here |
 
 ---
 
-## Why I Built This
-
-PM work has a lot of "meta-work" overhead: tracking what you committed to, remembering why a decision was made six weeks ago, keeping up with competitor moves, synthesizing customer calls into themes. That overhead compounds — and it's mostly work that doesn't directly make the product better.
-
-I wanted to eliminate as much of that meta-work as possible so I could spend more time on the actual thinking: what problem to solve, what trade-off to make, how to sequence work.
-
-The result is a system where:
-- I start every morning with a brief that already knows what's at risk, what I committed to yesterday, and what customer signals came in overnight.
-- Every evening, I capture what happened and the system writes it back to memory — so the next morning brief knows.
-- Competitor signals show up in my inbox without me searching for them.
-- When I need to write a spec, the AI already has context about the customer themes, open risks, and stakeholder positions.
-
----
-
-## Technical Overview
+## Technical Stack
 
 | Component | Detail |
 |-----------|--------|
-| **AI** | Claude (Anthropic) via Cowork desktop app |
-| **Scheduling** | Cowork scheduled tasks (cron-style, IST timezone) |
-| **Memory** | Markdown files with stable IDs (`L-###`, `D-###`, `R-###`) stored in a local workspace folder |
-| **Tool connections** | MCP (Model Context Protocol) integrations for each connected app |
-| **Validation** | Python validator (`validate_pm_os.py`) checks schema integrity after each write |
-| **Version control** | Git (local) — no secrets committed |
+| **AI** | Claude (Anthropic) |
+| **Scheduling** | Cron-based scheduled tasks (IST timezone) |
+| **Tool connections** | MCP (Model Context Protocol) per connected app |
+| **Memory** | Markdown files with stable IDs — `L-###`, `D-###`, `R-###`, `S-###`, `T-###` |
+| **Governance** | Operating Contract (Markdown authority document) |
+| **Validation** | Python validator — enforces Contract after every write |
+| **Multi-agent** | Parallel sub-agents for Jira queries and weekly memory/data reads |
 
 ---
 
-## Explore
-
-Start with **[SHOWCASE.md](./SHOWCASE.md)** for the full narrative, or jump directly into any section folder.
+Start with **[SHOWCASE.md](./SHOWCASE.md)** for the full story, or jump directly into any section.
