@@ -35,20 +35,23 @@ It does four things that most AI setups don't:
 │  Evening Debrief (6PM)       Weekly Radar (Sat) — subagent pair      │
 │                                                                      │
 │  On-Demand: spec writing · sprint planning · stakeholder updates     │
-└─────────────────────────────────┬────────────────────────────────────┘
-                                  │ governed by Operating Contract
-                                  ▼
-┌──────────────────────────────────────────────────────────────────────┐
-│                          PM OS MEMORY                                │
-│                                                                      │
-│  Open Loops (L-###)      Decision Ledger (D-###)                     │
-│  Risk Register (R-###)   Stakeholder Heatmap (S-###)                 │
-│  Customer Themes (T-###) Customer Insights — Latest (rolling 7-day)  │
-└──────────────────────────────────────────────────────────────────────┘
-                                  │
-                                  ▼
-                     Python schema validator
-              (enforces Operating Contract after every write)
+└──────────────┬──────────────────────────────────────┬───────────────┘
+               │ reads / writes memory                │ writes artifacts
+               ▼  governed by Operating Contract      ▼
+┌──────────────────────────────┐  ┌───────────────────────────────────┐
+│        PM OS / MEMORY        │  │           Daily Briefs/            │
+│                              │  │                                   │
+│  Open Loops      (L-###)     │  │  Morning Briefs/                  │
+│  Decision Ledger (D-###)     │  │    YYYY-MM-DD-Morning-Briefing.md │
+│  Risk Register   (R-###)     │  │  Evening Debriefs/                │
+│  Stakeholder     (S-###)     │  │    YYYY-MM-DD-Evening-Debrief.md  │
+│  Customer Themes (T-###)     │  │  Weekly Radars/                   │
+│  Customer Insights (7-day)   │  │    YYYY-MM-DD-Weekly-PM-Radar.md  │
+└──────────────────────────────┘  └───────────────────────────────────┘
+               │
+               ▼
+      Python schema validator
+  (enforces Operating Contract after every write)
 ```
 
 ---
